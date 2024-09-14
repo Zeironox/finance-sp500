@@ -19,20 +19,47 @@ async function fetchSP500Data() {
     return result;
 }
 
-async function calculateProfit() {
-    const investment = parseFloat(document.getElementById('investment').value);
-    if (isNaN(investment) || investment <= 0) {
-        document.getElementById('result').innerText = 'Per favore, inserisci un importo valido.';
-        return;
-    }
-
+async function calculateProfit(startDate, endDate, investment) {
     const data = await fetchSP500Data();
-    const startPrice = parseFloat(data.find(entry => entry.Date === "2000-01-03").Close);
-    const endPrice = parseFloat(data[data.length - 1].Close);
+
+    // Trova il prezzo di acquisto
+    const startEntry = data.find(entry => entry.Date.startsWith(startDate));
+    const startPrice = parseFloat(startEntry ? startEntry.Close : 0);
+
+    // Trova il prezzo attuale
+    const endEntry = data.find(entry => entry.Date.startsWith(endDate));
+    const endPrice = parseFloat(endEntry ? endEntry.Close : 0);
+
+    if (startPrice === 0 || endPrice === 0) {
+        return 'Dati non trovati per le date specificate.';
+    }
 
     const shares = investment / startPrice;
     const finalValue = shares * endPrice;
     const profit = finalValue - investment;
 
-    document.getElementById('result').innerText = `Guadagno: $${profit.toFixed(2)}`;
+    return profit.toFixed(2);
 }
+
+async function addInvestment() {
+    const startDate = document.getElementById('start-date').value;
+    const endDate = document.getElementById('end-date').value;
+    const amount = parseFloat(document.getElementById('amount').value);
+
+    if (isNaN(amount) || amount <= 0 || !startDate || !endDate) {
+        alert('Per favore, inserisci tutte le informazioni valide.');
+        return;
+    }
+
+    const profit = await calculateProfit(startDate, endDate, amount);
+
+    const table = document.getElementById('investment-table');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>${startDate} a ${endDate}</td>
+        <td>${amount.toFixed(2)}</td>
+        <td>${profit === 'Dati non trovati per le date specificate.' ? profit : '$' + profit}</td>
+    `;
+    table.appendChild(row);
+}
+
