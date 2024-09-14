@@ -17,6 +17,9 @@
         th {
             background-color: #f2f2f2;
         }
+        input, button {
+            margin: 5px;
+        }
     </style>
 </head>
 <body>
@@ -36,4 +39,17 @@
     </table>
 
     <br>
-    <label for="start-date">D
+    <label for="start-date">Data di Inizio (YYYY-MM):</label>
+    <input type="month" id="start-date">
+    
+    <label for="end-date">Data di Fine (YYYY-MM):</label>
+    <input type="month" id="end-date">
+    
+    <label for="amount">Importo da Investire ($):</label>
+    <input type="number" id="amount" placeholder="1000">
+    
+    <button onclick="addInvestment()">Aggiungi Investimento</button>
+    
+    <script src="script.js"></script>
+</body>
+</html>
