@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolatore Guadagni S&P 500</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            text-align: center;
+            padding: 20px;
+        }
+        input, button {
+            margin: 10px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calcolatore Guadagni S&P 500</h1>
+    <form id="calculator">
+        <label for="investment">Importo Investito (€):</label>
+        <input type="number" id="investment" required>
+        <br>
+        <label for="priceStart">Prezzo di Acquisto (€):</label>
+        <input type="number" id="priceStart" step="0.01" required>
+        <br>
+        <label for="priceEnd">Prezzo Attuale (€):</label>
+        <input type="number" id="priceEnd" step="0.01" required>
+        <br>
+        <button type="button" onclick="calculateProfit()">Calcola Guadagno</button>
+    </form>
+    <h2 id="result"></h2>
+    <script src="script.js"></script>
+</body>
+</html>
