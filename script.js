@@ -1,5 +1,5 @@
 async function fetchSP500Data() {
-    const response = await fetch('data/sp500_data.csv');  // Percorso relativo
+    const response = await fetch('data/sp500_data.csv');
     const csvText = await response.text();
     const lines = csvText.split('\n');
     const result = [];
@@ -21,22 +21,25 @@ async function fetchSP500Data() {
 
 async function calculateProfit(startDate, endDate, investment) {
     const data = await fetchSP500Data();
+    
+    // Filtra i dati per il range di date
+    const filteredData = data.filter(entry => entry.Date >= startDate && entry.Date <= endDate);
 
-    // Trova il prezzo di acquisto
-    const startEntry = data.find(entry => entry.Date.startsWith(startDate));
-    const startPrice = parseFloat(startEntry ? startEntry.Close : 0);
-
-    // Trova il prezzo attuale
-    const endEntry = data.find(entry => entry.Date.startsWith(endDate));
-    const endPrice = parseFloat(endEntry ? endEntry.Close : 0);
-
-    if (startPrice === 0 || endPrice === 0) {
-        return 'Dati non trovati per le date specificate.';
+    if (filteredData.length === 0) {
+        return 'Nessun dato trovato per il periodo specificato.';
     }
 
-    const shares = investment / startPrice;
-    const finalValue = shares * endPrice;
-    const profit = finalValue - investment;
+    // Calcola il totale investito e il valore finale
+    let totalInvested = 0;
+    let totalValue = 0;
+    
+    for (let entry of filteredData) {
+        const price = parseFloat(entry.Close);
+        totalInvested += investment;
+        totalValue += (investment / price) * price;
+    }
+
+    const profit = totalValue - totalInvested;
 
     return profit.toFixed(2);
 }
@@ -58,7 +61,7 @@ async function addInvestment() {
     row.innerHTML = `
         <td>${startDate} a ${endDate}</td>
         <td>${amount.toFixed(2)}</td>
-        <td>${profit === 'Dati non trovati per le date specificate.' ? profit : '$' + profit}</td>
+        <td>${profit === 'Nessun dato trovato per il periodo specificato.' ? profit : '$' + profit}</td>
     `;
     table.appendChild(row);
 }
