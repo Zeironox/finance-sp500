@@ -19,9 +19,9 @@ async function fetchSP500Data() {
     return result;
 }
 
-async function calculateProfit(startDate, endDate, investment) {
+async function calculateProfit(startDate, endDate, investmentPerMonth) {
     const data = await fetchSP500Data();
-    
+
     // Filtra i dati per il range di date
     const filteredData = data.filter(entry => entry.Date >= startDate && entry.Date <= endDate);
 
@@ -29,15 +29,32 @@ async function calculateProfit(startDate, endDate, investment) {
         return 'Nessun dato trovato per il periodo specificato.';
     }
 
-    // Calcola il totale investito e il valore finale
     let totalInvested = 0;
     let totalValue = 0;
+    let shares = 0;
+
+    // Per ogni mese nel range di date
+    let currentDate = new Date(startDate + "-01");
+    const endDateObj = new Date(endDate + "-01");
     
-    for (let entry of filteredData) {
-        const price = parseFloat(entry.Close);
-        totalInvested += investment;
-        totalValue += (investment / price) * price;
+    while (currentDate <= endDateObj) {
+        const monthStr = currentDate.toISOString().slice(0, 7); // YYYY-MM
+        const entry = filteredData.find(e => e.Date.startsWith(monthStr));
+        
+        if (entry) {
+            const price = parseFloat(entry.Close);
+            totalInvested += investmentPerMonth;
+            shares += investmentPerMonth / price;
+        }
+
+        // Avanza al mese successivo
+        currentDate.setMonth(currentDate.getMonth() + 1);
     }
+
+    // Calcola il valore finale
+    const finalEntry = filteredData[filteredData.length - 1];
+    const finalPrice = parseFloat(finalEntry.Close);
+    totalValue = shares * finalPrice;
 
     const profit = totalValue - totalInvested;
 
