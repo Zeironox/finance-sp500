@@ -62,4 +62,3 @@ async function addInvestment() {
     `;
     table.appendChild(row);
 }
-
